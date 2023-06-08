@@ -23,8 +23,8 @@
 *
 * ## Implementation notes
 *
-* - If we just wrap and return the 'this' in the Item constructor, it will not find any sub-class functions. It would be
-*   good to understand exactly why that is
+* - If we just wrap and return the 'this' in the Item constructor, it will not find any sub-class functions. It would 
+*   be good to understand exactly why that is
 *
 * ## Next steps
 *
@@ -242,6 +242,9 @@ const requiredItemConfig = ['itemClass', 'itemName', 'keyField', 'resourceName']
 * - `itemName`: The name by which to refer resource items.
 * - `keyField`: The key field used as or to generate an ID.
 * - `resourceName`: The name by which to refer to the resource as a wole and multiple resource items.
+* - `dataFlattener`: (opt) A function which flattens nested data. E.g., when outputting data in a CSV (tabular) format.
+* - `dataCleaner`: (opt) A function which removes or otherwise transforms data in preparation for display or export. 
+*      E.g., to remove cached or ephemeral values.
 * - `idNormalizer`: (opt) A function used to normalize the key field when creating implied IDs. Will default to the
 *     `defaultIdNormalizer` if not specified.
 */
