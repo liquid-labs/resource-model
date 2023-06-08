@@ -13,5 +13,11 @@
   "bugs": {
     "url": "https://github.com/liquid-labs/resource-model/issues"
   },
-  "homepage": "https://github.com/liquid-labs/resource-model#readme"
+  "homepage": "https://github.com/liquid-labs/resource-model#readme",
+  "devDependencies": {
+    "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.15"
+  },
+  "dependencies": {
+    "@liquid-labs/federated-json": "^1.0.0-alpha.34"
+  }
 }
