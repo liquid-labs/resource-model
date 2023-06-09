@@ -54,7 +54,7 @@ const Resources = class {
         throw new Error("Key field 'id' not found on at least one item.")
       }
       if (hasExplicitId === false && 'id' in item) {
-        throw new Error(`Inferred/reserved 'id' found on at least one item (key field is: ${this.#itemConfig.keyField}).`)
+        throw new Error(`Inferred/reserved 'id' found on at least one ${this.itemName} item (key field is: ${this.keyField}).`)
       }
       item.id = item.id || this.idNormalizer(item[this.keyField])
       if (seen[item.id] === true) {
