@@ -52,7 +52,7 @@ const Resources = class {
       // add standard 'id' field if not present.
       if (hasExplicitId === true && !('id' in item)) {
         throw new Error("Key field 'id' not found on at least one item.")
-      } 
+      }
       if (hasExplicitId === false && 'id' in item) {
         throw new Error(`Inferred/reserved 'id' found on at least one item (key field is: ${this.#itemConfig.keyField}).`)
       }
@@ -68,10 +68,10 @@ const Resources = class {
       const newCleaner = origDataCleaner === undefined
         ? (data) => { delete data.id; return data }
         : (data) => {
-            delete data.id
-            return origDataCleaner
-          }
-      this.#itemConfigCache = Object.assign({}, this.#itemConfig, { dataCleaner: newCleaner })
+          delete data.id
+          return origDataCleaner
+        }
+      this.#itemConfigCache = Object.assign({}, this.#itemConfig, { dataCleaner : newCleaner })
       Object.freeze(this.#itemConfigCache)
     }
 

@@ -20,9 +20,9 @@
 * data.a = 2
 * console.log(`${data.a} - ${foo.a}`) // prints: '2 - 1'
 * ```
-* 
-* Attempts to set a value for an existing property will fail. Attempts to create 
-* 
+*
+* Attempts to set a value for an existing property will fail. Attempts to create
+*
 * ## Implementation notes
 *
 * - If we just wrap and return the 'this' in the Item constructor, it will not find any sub-class functions. It would

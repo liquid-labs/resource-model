@@ -18,15 +18,15 @@ const data = {
 
 const SetFoo = class extends Item {
   constructor(data) {
-    super(data, { allowSet : [ 'foo' ]})
+    super(data, { allowSet : ['foo'] })
   }
 }
 
 Item.bindCreationConfig({
-  itemClass: SetFoo,
-  itemName : 'foo',
-  keyField: 'id',
-  resourceName: 'foos'
+  itemClass    : SetFoo,
+  itemName     : 'foo',
+  keyField     : 'id',
+  resourceName : 'foos'
 })
 
 const SubItem = class extends Item {
@@ -100,17 +100,17 @@ describe('Item', () => {
 
     describe('set operations', () => {
       test('are not permitted on unknown properties', () => {
-        const subItem = new SubItem({ integer: 1, blah: 10 })
+        const subItem = new SubItem({ integer : 1, blah : 10 })
         expect(() => { subItem.foo = 12 }).toThrow()
       })
 
       test('by default are not permitted on known properties', () => {
-        const subItem = new SubItem({ integer: 1, blah: 10 })
+        const subItem = new SubItem({ integer : 1, blah : 10 })
         expect(() => { subItem.blah = 12 }).toThrow()
       })
 
       test('succeed when explicitly allowed', () => {
-        const foo = new SetFoo({ id: 1, foo: 12 })
+        const foo = new SetFoo({ id : 1, foo : 12 })
         expect(foo.foo).toBe(12)
         foo.foo = 10
         expect(foo.foo).toBe(10)
