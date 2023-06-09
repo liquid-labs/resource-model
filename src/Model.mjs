@@ -1,31 +1,31 @@
-const requiredResourceProperties = ['itemClass', 'itemName', 'keyField', 'resourceName']
+const requiredItemManagerProperties = ['itemClass', 'itemName', 'keyField', 'itemsName']
 const requiredValidatorProperties = ['validate']
 
 const Model = class {
-  #rootResources = []
+  #rootItemManagers = []
   #validators = []
 
-  constructor({ resourceRoots = [] } = {}) {
-    for (const resource of resourceRoots) {
-      this.bindRootResource(resource)
+  constructor({ rootItemManagers = [] } = {}) {
+    for (const itemManager of rootItemManagers) {
+      this.bindRootItemManager(itemManager)
     }
   }
 
-  bindRootResource(resource) {
-    for (const property of requiredResourceProperties) {
-      if (!(property in resource)) {
-        throw new Error(`Resource ${resource.resourceName ? resource.resourceName + ' ' : ''} does not define required property '${property}'.`)
+  bindRootItemManager(itemManager) {
+    for (const property of requiredItemManagerProperties) {
+      if (!(property in itemManager)) {
+        throw new Error(`Item manager ${itemManager.itemsName ? `'${itemManager.itemsName}' ` : ''} does not define required property '${property}'.`)
       }
     }
 
-    Object.defineProperty(this, resource.resourceName, {
-      value        : resource,
+    Object.defineProperty(this, itemManager.itemsName, {
+      value        : itemManager,
       writable     : false,
       enumerable   : true,
       configurable : false
     })
 
-    this.#rootResources.push(resource)
+    this.#rootItemManagers.push(itemManager)
   }
 
   bindValidator(validator) {
@@ -39,9 +39,9 @@ const Model = class {
   }
 
   validate() {
-    for (const resource of this.#rootResources) {
-      if (resource.validate) {
-        resource.validate()
+    for (const itemManager of this.#rootItemManagers) {
+      if (itemManager.validate) {
+        itemManager.validate()
       }
     }
 

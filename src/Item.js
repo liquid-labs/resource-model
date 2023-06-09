@@ -225,24 +225,24 @@ const Item = class {
   get itemName() { return this.constructor.itemConfig.itemName }
 
   /**
-  * Our 'keyField'. We will always annotate incoming objcts with 'id', but the resource may use another field for it's
-  * canonical ID.
+  * Our 'keyField'. We will always annotate incoming objcts with 'id', but the ItemManager may use another field for
+  * it's canonical ID.
   */
   get keyField() { return this.constructor.itemConfig.keyField }
 
-  get resourceName() { return this.constructor.itemConfig.resourceName }
+  get itemsName() { return this.constructor.itemConfig.itemsName }
 }
 
-const requiredItemConfig = ['itemClass', 'itemName', 'keyField', 'resourceName']
+const requiredItemConfig = ['itemClass', 'itemName', 'keyField', 'itemsName']
 /**
-* Creates a frozen resource 'itemConfig' and immutably binds it to the resource class.
+* Creates a frozen 'itemConfig' and immutably binds it to the Item class.
 *
 * #### Parameters
 *
-* - `itemClass`: The class used to create new resource items. This is also where the class `itemConfig' is bound.
-* - `itemName`: The name by which to refer resource items.
+* - `itemClass`: The class used to create new items. This is also where the class `itemConfig' is bound.
+* - `itemName`: The name by which to refer items.
 * - `keyField`: The key field used as or to generate an ID.
-* - `resourceName`: The name by which to refer to the resource as a wole and multiple resource items.
+* - `itemsName`: The name by which to refer to the multple items.
 * - `dataFlattener`: (opt) A function which flattens nested data. E.g., when outputting data in a CSV (tabular) format.
 * - `dataCleaner`: (opt) A function which removes or otherwise transforms data in preparation for display or export.
 *      E.g., to remove cached or ephemeral values.
