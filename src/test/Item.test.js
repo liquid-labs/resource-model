@@ -70,32 +70,34 @@ Item.bindCreationConfig(Object.assign({},
 describe('Item', () => {
   // collection of common tests check access from class and subclass instances
   const basicAccessTests = (target, targetProto) => {
-    test(`${target.constructor.name} has protoype ${targetProto}`, () =>
-      expect(Object.getPrototypeOf(target)).toBe(targetProto))
-
-    test.each([['string', VAL_STRING], ['integer', VAL_INTEGER]])('item.%s -> $p', (key, value) => {
-      expect(target[key]).toBe(value)
+    describe('constructor', () => {
+      test(`${target.constructor.name} has protoype ${targetProto}`, () =>
+        expect(Object.getPrototypeOf(target)).toBe(targetProto))
     })
 
-    test.each([
-      ['object', VAL_OBJ],
-      ['array', VAL_ARRAY]
-    ])('will return distinct, equivalent %s values', (key, value) => {
-      const ourValue = target[key]
-      expect(ourValue).toEqual(value)
-      expect(ourValue).not.toBe(value)
-      ourValue.string = 'new string'
-      expect(ourValue.string).not.toEqual(value.string)
-    })
+    describe('get', () => {
+      test.each([['string', VAL_STRING], ['integer', VAL_INTEGER]])('item.%s -> $p', (key, value) => {
+        expect(target[key]).toBe(value)
+      })
 
-    test('blocks writes to valid keys', () => expect(() => { target.integer = 42 }).toThrow())
+      test.each([
+        ['object', VAL_OBJ],
+        ['array', VAL_ARRAY]
+      ])('will return distinct, equivalent %s values', (key, value) => {
+        const ourValue = target[key]
+        expect(ourValue).toEqual(value)
+        expect(ourValue).not.toBe(value)
+        ourValue.string = 'new string'
+        expect(ourValue.string).not.toEqual(value.string)
+      })
 
-    test("will map the 'id' proerty", () => expect(target.id).toBe(1))
+      test("will map the 'id' property", () => expect(target.id).toBe(1))
 
-    test('.data -> a copy of the data', () => {
-      const { data: dataCopy } = target
-      expect(dataCopy).toEqual(data)
-      expect(dataCopy).not.toBe(data)
+      test('.data -> a copy of the data', () => {
+        const { data: dataCopy } = target
+        expect(dataCopy).toEqual(data)
+        expect(dataCopy).not.toBe(data)
+      })
     })
 
     describe('set operations', () => {
