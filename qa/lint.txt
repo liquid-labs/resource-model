@@ -1,0 +1,28 @@
+Test git rev: 487f29762d0fc7cfd03d70c2e1562b4e8b589f33
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/Item.js
+  23:2   error  Trailing spaces not allowed  no-trailing-spaces
+  24:81  error  Trailing spaces not allowed  no-trailing-spaces
+  25:2   error  Trailing spaces not allowed  no-trailing-spaces
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/Model.mjs
+  15:93  error  Parsing error: Unexpected token, expected ":" (15:93)
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/test/Item.test.js
+   21:31  error  There should be no space after '['      array-bracket-spacing
+   21:37  error  There should be no space before ']'     array-bracket-spacing
+   21:39  error  A space is required before '}'          object-curly-spacing
+   26:3   error  Missing space after key 'itemClass'     key-spacing
+   27:3   error  Missing space after key 'itemName'      key-spacing
+   28:3   error  Missing space after key 'keyField'      key-spacing
+   29:3   error  Missing space after key 'resourceName'  key-spacing
+  103:39  error  Missing space after key 'integer'       key-spacing
+  103:51  error  Missing space after key 'blah'          key-spacing
+  108:39  error  Missing space after key 'integer'       key-spacing
+  108:51  error  Missing space after key 'blah'          key-spacing
+  113:34  error  Missing space after key 'id'            key-spacing
+  113:41  error  Missing space after key 'foo'           key-spacing
+
+✖ 17 problems (17 errors, 0 warnings)
+  16 errors and 0 warnings potentially fixable with the `--fix` option.
+
