@@ -16,6 +16,19 @@ const data = {
   array   : VAL_ARRAY
 }
 
+const SetFoo = class extends Item {
+  constructor(data) {
+    super(data, { allowSet : [ 'foo' ]})
+  }
+}
+
+Item.bindCreationConfig({
+  itemClass: SetFoo,
+  itemName : 'foo',
+  keyField: 'id',
+  resourceName: 'foos'
+})
+
 const SubItem = class extends Item {
   subFunc() { return 'subfunc' }
 
@@ -85,10 +98,23 @@ describe('Item', () => {
       expect(dataCopy).not.toBe(data)
     })
 
-    test('.rawData -> the underlying data', () => {
-      const { rawData } = target
-      expect(rawData).toEqual(data)
-      expect(rawData).toBe(data)
+    describe('set operations', () => {
+      test('are not permitted on unknown properties', () => {
+        const subItem = new SubItem({ integer: 1, blah: 10 })
+        expect(() => { subItem.foo = 12 }).toThrow()
+      })
+
+      test('by default are not permitted on known properties', () => {
+        const subItem = new SubItem({ integer: 1, blah: 10 })
+        expect(() => { subItem.blah = 12 }).toThrow()
+      })
+
+      test('succeed when explicitly allowed', () => {
+        const foo = new SetFoo({ id: 1, foo: 12 })
+        expect(foo.foo).toBe(12)
+        foo.foo = 10
+        expect(foo.foo).toBe(10)
+      })
     })
 
     describe('private fields', () => {

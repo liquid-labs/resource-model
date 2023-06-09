@@ -20,10 +20,12 @@
 * data.a = 2
 * console.log(`${data.a} - ${foo.a}`) // prints: '2 - 1'
 * ```
-*
+* 
+* Attempts to set a value for an existing property will fail. Attempts to create 
+* 
 * ## Implementation notes
 *
-* - If we just wrap and return the 'this' in the Item constructor, it will not find any sub-class functions. It would 
+* - If we just wrap and return the 'this' in the Item constructor, it will not find any sub-class functions. It would
 *   be good to understand exactly why that is
 *
 * ## Next steps
@@ -34,8 +36,8 @@
 * ## Known issues
 *
 * - `object.bar = new Function(...)` may mean "remember this function", but is treated as "callable function"; need to
-*   implement configuration to avoid. The current workaround is to define a getter and/or setter for such a field, which
-*   will force it to be treated like a field property rather than a function property.
+*   implement configuration to avoid. The current workaround is to define a getter and/or setter for such a field,
+*   which will force it to be treated like a field property rather than a function property.
 *
 * ## Credits
 *
@@ -44,8 +46,8 @@
 */
 
 /**
-* Index to map proxies to underlying objects. We use a weak map so that once the proxy goes out of scope, the underlying
-* object can also be garbage collected.
+* Index to map proxies to underlying objects. We use a weak map so that once the proxy goes out of scope, the
+* underlying object can also be garbage collected.
 */
 const thisMapper = new WeakMap()
 
@@ -56,6 +58,7 @@ const indexAllProperties = (obj) => {
   const propIndex = {}
   const methodIndex = {}
 
+  // the while loop walks up our prototype ancestry
   while (obj/* && obj !== Object.prototype <- any use for hiding? */) {
     const propDescriptors = Object.getOwnPropertyDescriptors(obj)
     // eslint-disable-next-line guard-for-in
@@ -93,8 +96,9 @@ const indexAllProperties = (obj) => {
 const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
   get : (object, key, receiver) => {
     if (key === 'isProxy') return true
-    // object method calls can go through the get handler first to retrieve the function
-    // TODO: the 'private' thing is a workaround for a Babel bug (?) that messes up private calls
+    // object method calls go through the get handler first to retrieve the function itself
+    // TODO: the 'private' thing is a workaround for a Babel bug (?) that messes up private calls **I wonder if the
+    // new catalyst-scripts-node-project fixes this? Since we don't bother to target ancient platforms
     else if (methodIndex[key] || propIndex[key] || key.match?.(/private/)) {
       try { // TODO: see note on catch below
         return receiver
@@ -205,9 +209,6 @@ const Item = class {
     return this.dataCleaner ? this.dataCleaner(data) : data
   }
 
-  // TODO: drop this
-  get rawData() { return this.#data }
-
   // item config convenience accessors
   get dataCleaner() { return this.constructor.itemConfig.dataCleaner }
 
@@ -243,7 +244,7 @@ const requiredItemConfig = ['itemClass', 'itemName', 'keyField', 'resourceName']
 * - `keyField`: The key field used as or to generate an ID.
 * - `resourceName`: The name by which to refer to the resource as a wole and multiple resource items.
 * - `dataFlattener`: (opt) A function which flattens nested data. E.g., when outputting data in a CSV (tabular) format.
-* - `dataCleaner`: (opt) A function which removes or otherwise transforms data in preparation for display or export. 
+* - `dataCleaner`: (opt) A function which removes or otherwise transforms data in preparation for display or export.
 *      E.g., to remove cached or ephemeral values.
 * - `idNormalizer`: (opt) A function used to normalize the key field when creating implied IDs. Will default to the
 *     `defaultIdNormalizer` if not specified.
