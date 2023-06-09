@@ -5,6 +5,8 @@ import { getSourceFile } from '@liquid-labs/federated-json'
 import { ListManager } from './ListManager'
 import { Item } from './Item'
 
+const passthruNormalizer = (id) => id
+
 /**
 * Common class for base resources support simple get and list functions.
 */
@@ -38,11 +40,22 @@ const Resources = class {
     if (readFromFile === true) {
       items = JSON.parse(fs.readFileSync(fileName))
     }
-    // add standard 'id' field if not present.
+
+    // set manuall set itemConfig
+    this.#itemConfigCache = itemConfig
+
     items = items || []
     // normalize and guarantee uniqueness of items (based on ID)
     const seen = {}
+    const hasExplicitId = this.#itemConfig.keyField === 'id'
     items.forEach((item) => {
+      // add standard 'id' field if not present.
+      if (hasExplicitId === true && !('id' in item)) {
+        throw new Error("Key field 'id' not found on at least one item.")
+      }
+      if (hasExplicitId === false && 'id' in item) {
+        throw new Error(`Inferred/reserved 'id' found on at least one item (key field is: ${this.#itemConfig.keyField}).`)
+      }
       item.id = item.id || this.idNormalizer(item[this.keyField])
       if (seen[item.id] === true) {
         throw new Error(`Found items with duplicate key field '${this.keyField}' values ('${item.id}') in the ${this.resourceName} list.`)
@@ -50,8 +63,17 @@ const Resources = class {
       seen[item.id] = true
     })
 
-    // set manuall set itemConfig
-    this.#itemConfigCache = itemConfig
+    if (hasExplicitId === false) {
+      const origDataCleaner = this.#itemConfig.dataCleaner
+      const newCleaner = origDataCleaner === undefined
+        ? (data) => { delete data.id; return data }
+        : (data) => {
+          delete data.id
+          return origDataCleaner
+        }
+      this.#itemConfigCache = Object.assign({}, this.#itemConfig, { dataCleaner : newCleaner })
+      Object.freeze(this.#itemConfigCache)
+    }
 
     // setup ListManager
     this.listManager = new ListManager({
@@ -71,6 +93,7 @@ const Resources = class {
 
   // TODO: switch implementatiosn to set itemConfig directly, then we can do away with the 'Cache' convention and this constructor test.
   get #itemConfig() {
+    // return Object.assign({}, this.#itemConfigCache || this.constructor.itemConfig)
     return this.#itemConfigCache || this.constructor.itemConfig
   }
 
@@ -82,7 +105,7 @@ const Resources = class {
   /**
   * See [Item.idNormalizer](./Item.md#idnormalizer)
   */
-  get idNormalizer() { return this.#itemConfig.idNormalizer }
+  get idNormalizer() { return this.#itemConfig.idNormalizer || passthruNormalizer }
 
   get itemClass() { return this.#itemConfig.itemClass }
 
