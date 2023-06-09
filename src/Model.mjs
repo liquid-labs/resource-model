@@ -5,7 +5,7 @@ const Model = class {
   #rootResources = []
   #validators = []
 
-  constructor({ resourceRoots = []} = {}) {
+  constructor({ resourceRoots = [] } = {}) {
     for (const resource of resourceRoots) {
       this.bindRootResource(resource)
     }
