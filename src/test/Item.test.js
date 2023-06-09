@@ -6,10 +6,6 @@ const VAL_STRING = 'a string'
 const VAL_INTEGER = 1
 const VAL_OBJ = { string : 'nested string', object : { string : 'nested object string' } }
 const VAL_ARRAY = [1, 'string', { string : 'object nested in array string' }]
-const TestClass = class {
-  hi() { return 'hi' }
-}
-const VAL_INSTANCE = new TestClass()
 
 const VAL_OVERRIDE_TRICK = 'tricked you!'
 
