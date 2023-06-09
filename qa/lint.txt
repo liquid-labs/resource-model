@@ -1,0 +1,44 @@
+Test git rev: 4be598bb3cb52b314bc2437a85dd0e9e02a7c30b
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/Model.mjs
+  8:35  error  A space is required before '}'  object-curly-spacing
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/test/Model.test.js
+   9:3   error  Missing space after key 'itemClass'            key-spacing
+  10:3   error  Missing space after key 'itemName'             key-spacing
+  10:23  error  Trailing spaces not allowed                    no-trailing-spaces
+  11:3   error  Missing space after key 'keyField'             key-spacing
+  12:3   error  Missing space after key 'resourceName'         key-spacing
+  26:33  error  Missing space after key 'resourceRoots'        key-spacing
+  26:49  error  There should be no space after '['             array-bracket-spacing
+  26:65  error  Missing space after key 'items'                key-spacing
+  26:75  error  Missing space after key 'id'                   key-spacing
+  26:86  error  There should be no space before ']'            array-bracket-spacing
+  26:88  error  A space is required before '}'                 object-curly-spacing
+  35:45  error  Missing space after key 'items'                key-spacing
+  35:55  error  Missing space after key 'id'                   key-spacing
+  43:33  error  Missing space after key 'resourceRoots'        key-spacing
+  43:49  error  There should be no space after '['             array-bracket-spacing
+  43:65  error  Missing space after key 'items'                key-spacing
+  43:75  error  Missing space after key 'id'                   key-spacing
+  43:86  error  There should be no space before ']'            array-bracket-spacing
+  43:88  error  A space is required before '}'                 object-curly-spacing
+  48:39  error  Missing space after key 'items'                key-spacing
+  48:49  error  Missing space after key 'id'                   key-spacing
+  50:33  error  Missing space after key 'resourceRoots'        key-spacing
+  50:49  error  There should be no space after '['             array-bracket-spacing
+  50:58  error  There should be no space before ']'            array-bracket-spacing
+  50:60  error  A space is required before '}'                 object-curly-spacing
+  55:39  error  Missing space after key 'items'                key-spacing
+  55:49  error  Missing space after key 'id'                   key-spacing
+  56:33  error  Missing space after key 'resourceRoots'        key-spacing
+  56:49  error  There should be no space after '['             array-bracket-spacing
+  56:58  error  There should be no space before ']'            array-bracket-spacing
+  56:60  error  A space is required before '}'                 object-curly-spacing
+  57:29  error  Missing space after key 'validate'             key-spacing
+  57:72  error  A space is required before '}'                 object-curly-spacing
+  61:3   error  Newline required at end of file but not found  eol-last
+
+✖ 35 problems (35 errors, 0 warnings)
+  35 errors and 0 warnings potentially fixable with the `--fix` option.
+
