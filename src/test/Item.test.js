@@ -23,10 +23,10 @@ const SetFoo = class extends Item {
 }
 
 Item.bindCreationConfig({
-  itemClass    : SetFoo,
-  itemName     : 'foo',
-  keyField     : 'id',
-  resourceName : 'foos'
+  itemClass : SetFoo,
+  itemName  : 'foo',
+  keyField  : 'id',
+  itemsName : 'foos'
 })
 
 const SubItem = class extends Item {
@@ -36,11 +36,11 @@ const SubItem = class extends Item {
 }
 
 Item.bindCreationConfig({
-  dataCleaner  : (data) => { delete data.id; return data },
-  itemClass    : SubItem,
-  itemName     : 'sub-item',
-  keyField     : 'integer',
-  resourceName : 'sub-items'
+  dataCleaner : (data) => { delete data.id; return data },
+  itemClass   : SubItem,
+  itemName    : 'sub-item',
+  keyField    : 'integer',
+  itemsName   : 'sub-items'
 })
 
 const SubSubItem = class extends SubItem {
@@ -49,9 +49,9 @@ const SubSubItem = class extends SubItem {
 
 Item.bindCreationConfig(Object.assign({},
   SubItem.itemConfig, {
-    itemClass    : SubSubItem,
-    itemName     : 'sub-sub-item',
-    resourceName : 'sub-sub-items'
+    itemClass : SubSubItem,
+    itemName  : 'sub-sub-item',
+    itemsName : 'sub-sub-items'
   }))
 
 const TrickItem = class extends SubItem {
@@ -62,9 +62,9 @@ const TrickItem = class extends SubItem {
 
 Item.bindCreationConfig(Object.assign({},
   SubItem.itemConfig, {
-    itemClass    : TrickItem,
-    itemName     : 'trick item',
-    resourceName : 'trick items'
+    itemClass : TrickItem,
+    itemName  : 'trick item',
+    itemsName : 'trick items'
   }))
 
 describe('Item', () => {
@@ -140,7 +140,7 @@ describe('Item', () => {
           return this.getBar()
         }
       } // class Foo
-      Item.bindCreationConfig({ itemClass : Foo, itemName : 'foo', resourceName : 'foos', keyField : 'name' })
+      Item.bindCreationConfig({ itemClass : Foo, itemName : 'foo', itemsName : 'foos', keyField : 'name' })
       const foo = new Foo()
 
       test('works with private value fields', () => expect(foo.getBar()).toBe('bar'))

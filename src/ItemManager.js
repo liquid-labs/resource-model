@@ -8,9 +8,9 @@ import { Item } from './Item'
 const passthruNormalizer = (id) => id
 
 /**
-* Common class for base resources support simple get and list functions.
+* Common class for base item manager support simple get and list functions.
 */
-const Resources = class {
+const ItemManager = class {
   #itemConfigCache
   #itemCreationOptions
   #fileName
@@ -32,10 +32,10 @@ const Resources = class {
     this.#fileName = fileName || getSourceFile(items)
     // read from source file if indicated
     if (readFromFile === true && items && items.length > 0) {
-      throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${this.resourceName}.`)
+      throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${this.itemsName}.`)
     }
     if (readFromFile === true && !fileName) {
-      throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${this.resourceName}.`)
+      throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${this.itemsName}.`)
     }
     if (readFromFile === true) {
       items = JSON.parse(fs.readFileSync(fileName))
@@ -58,7 +58,7 @@ const Resources = class {
       }
       item.id = item.id || this.idNormalizer(item[this.keyField])
       if (seen[item.id] === true) {
-        throw new Error(`Found items with duplicate key field '${this.keyField}' values ('${item.id}') in the ${this.resourceName} list.`)
+        throw new Error(`Found items with duplicate key field '${this.keyField}' values ('${item.id}') in the ${this.itemsName} list.`)
       }
       seen[item.id] = true
     })
@@ -77,7 +77,7 @@ const Resources = class {
 
     // setup ListManager
     this.listManager = new ListManager({
-      className    : this.resourceName,
+      className    : this.itemsName,
       keyField     : this.keyField,
       idNormalizer : this.idNormalizer,
       items
@@ -116,7 +116,7 @@ const Resources = class {
   */
   get keyField() { return this.#itemConfig.keyField }
 
-  get resourceName() { return this.#itemConfig.resourceName }
+  get itemsName() { return this.#itemConfig.itemsName }
 
   add(data) {
     data = ensureRaw(data)
@@ -134,8 +134,7 @@ const Resources = class {
   *
   * Options:
   * - `dataAugmentor`: used to augment the base data, such as with implied or context driven data that isn't reflected
-  *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
-  *   users.
+  *   in the raw data structure. This is intendend for use by ItemManagers and should not be used by end users.
   */
   get(id, { dataAugmentor, ...options } = {}) {
     let data = this.#indexById[id]
@@ -174,12 +173,11 @@ const Resources = class {
   }
 
   /**
-  * Returns a list of the resource items.
+  * Returns a list of the items.
   *
   * ### Parameters
   * - `dataAugmentor`: used to augment the base data, such as with implied or context driven data that isn't reflected
-  *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
-  *   users.
+  *   in the raw data structure. This is intendend for use by ItemManagers and should not be used by end users.
   * - `rawData`: if true, then JSON structures will be returned rather than full objects.
   * - `sort`: the field to sort on. Defaults to 'id'. Set to `false` for unsorted and slightly faster results.
   * - `sortFunc`: a specialized sort function. If provided, then `sort` will be ignored, even if `false`.
@@ -215,7 +213,7 @@ const Resources = class {
   }
 
   write({ fileName = this.#fileName } = {}) {
-    if (!fileName) { throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`) }
+    if (!fileName) { throw new Error(`Cannot write '${this.itemsName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`) }
 
     let itemList = this.list({ rawData : true }) // now we have a deep copy, so we don't have to worry about changes
     if (this.dataCleaner) {
@@ -238,8 +236,8 @@ const Resources = class {
   }
 
   /**
-  * A 'safe' creation method that guarantees the creation options defined in the resource constructor will override the
-  * the incoming options.
+  * A 'safe' creation method that guarantees the creation options defined in the Item constructor will override the
+  * incoming options.
   */
   createItem(data, options) {
     return new this.itemClass(data, Object.assign({}, options, this.#itemCreationOptions)) // eslint-disable-line new-cap
@@ -288,4 +286,4 @@ const fieldSort = (field) => (a, b) => a[field].localeCompare(b[field])
 
 const ensureRaw = (data) => data instanceof Item ? data.rawData : structuredClone(data)
 
-export { Resources }
+export { ItemManager }
