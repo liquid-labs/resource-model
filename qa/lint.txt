@@ -1,0 +1,18 @@
+Test git rev: 017764ee5e9b3cc64e12df3cdcc3ae5b66707dae
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/Item.js
+   26:118  error  Trailing spaces not allowed          no-trailing-spaces
+   37:115  error  Trailing spaces not allowed          no-trailing-spaces
+   47:110  error  Trailing spaces not allowed          no-trailing-spaces
+   99:116  error  Trailing spaces not allowed          no-trailing-spaces
+  135:14   error  There should be no space after '['   array-bracket-spacing
+  135:32   error  There should be no space before ']'  array-bracket-spacing
+  258:117  error  Trailing spaces not allowed          no-trailing-spaces
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/test/Item.test.js
+  165:37  error  Missing space after key 'integer'  key-spacing
+  165:51  error  Missing space after key 'blah'     key-spacing
+
+✖ 9 problems (9 errors, 0 warnings)
+  9 errors and 0 warnings potentially fixable with the `--fix` option.
+
