@@ -1,4 +1,4 @@
-/* globals describe expect test */
+/* globals describe expect fail test */
 import { Item } from '../Item'
 import { ItemManager } from '../ItemManager'
 import { Model } from '../Model'
@@ -39,23 +39,48 @@ describe('Model', () => {
   })
 
   describe('validate', () => {
-    test('does nothing if there are no validating ItemManagers or validators', () => {
+    test('does nothing if there are no validating ItemManagers or validators', async() => {
       const model = new Model({ rootItemManagers : [new SubItems({ items : [{ id : 1 }] })] })
-      expect(() => model.validate()).not.toThrow()
+      await model.validate()
     })
 
-    test('will execute ItemManager validators', () => {
+    test('will execute ItemManager validators', (done) => {
       const subItems = new SubItems({ items : [{ id : 1 }] })
       subItems.validate = () => throw new Error('Invalid!')
       const model = new Model({ rootItemManagers : [subItems] })
-      expect(() => model.validate()).toThrow()
+
+      model.validate()
+        .then(() => {
+          fail('Did not raise expected exception')
+          done()
+        })
+        .catch((e) => done())
     })
 
-    test('will execute additional validators', () => {
+    test('will execute sub-Model validators', (done) => {
+      const subItems = new SubItems({ items : [{ id : 1 }] })
+      subItems.validate = () => throw new Error('Invalid!')
+      const subModel = new Model({ rootItemManagers : [subItems] })
+      const model = new Model({ subModels : [{ name : 'subSpace', model : subModel }] })
+
+      model.validate()
+        .then(() => {
+          fail('Did not raise expected exception')
+          done()
+        })
+        .catch((e) => done())
+    })
+
+    test('will execute additional validators', (done) => {
       const subItems = new SubItems({ items : [{ id : 1 }] })
       const model = new Model({ rootItemManagers : [subItems] })
       model.bindValidator({ validate : () => throw new Error('Invalid!') })
-      expect(() => model.validate()).toThrow()
+      model.validate()
+        .then(() => {
+          fail('Did not raise expected exception')
+          done()
+        })
+        .catch((e) => done())
     })
   })
 })
