@@ -1,4 +1,4 @@
-import { idxType } from './lib/index-idxType'
+import { idxType } from './lib/index-relationships'
 
 /**
 * Manages simple a set of items and value-field one-to-one and one-to-many indexes. Intended for use with a set of items

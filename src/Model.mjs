@@ -38,7 +38,7 @@ const Model = class {
   bindSubModel(name, model) {
     for (const property of requiredValidatorProperties) {
       if (!(property in model)) {
-        throw new Error(`Validator ${validator.name ? validator.name + ' ' : ''} does not define required property '${property}'.`)
+        throw new Error(`Sub-model ${name} does not define required property '${property}'.`)
       }
     }
 
