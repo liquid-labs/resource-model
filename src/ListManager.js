@@ -1,4 +1,4 @@
-import * as relationships from './lib/index-relationships'
+import { idxType } from './lib/index-idxType'
 
 /**
 * Manages simple a set of items and value-field one-to-one and one-to-many indexes. Intended for use with a set of items
@@ -46,7 +46,7 @@ const ListManager = class {
     this.#idIndex = this.addIndex({
       name         : 'byId',
       indexField   : keyField,
-      relationship : relationships.ONE_TO_ONE
+      relationship : idxType.ONE_TO_ONE
     })
     this.#className = className
   }
@@ -143,7 +143,7 @@ const ListManager = class {
       throw new Error(`Did not find ${className ? `${className} for ` : ''}key '${key}' in index${indexName ? ` '${indexName}'` : ''}.`)
     }
 
-    if (relationship === relationships.ONE_TO_ONE) {
+    if (relationship === idxType.ONE_TO_ONE) {
       if (cloneAll === true) return structuredClone(value)
       else if (noClone === true) return value
       else return structuredClone(value)
@@ -306,8 +306,8 @@ const truncateObject = (o) => {
 
 const routeByRelationship = ({ indexSpec, one2oneFunc, one2manyFunc, ...rest }) => {
   switch (indexSpec.relationship) {
-  case relationships.ONE_TO_ONE: one2oneFunc({ ...indexSpec, ...rest }); break
-  case relationships.ONE_TO_MANY: one2manyFunc({ ...indexSpec, ...rest }); break
+  case idxType.ONE_TO_ONE: one2oneFunc({ ...indexSpec, ...rest }); break
+  case idxType.ONE_TO_MANY: one2manyFunc({ ...indexSpec, ...rest }); break
     // TODO: include this check in 'addIndex'
   default: throw new Error(`Unknown index relationship spec ('${indexSpec.relationship}')`)
   }

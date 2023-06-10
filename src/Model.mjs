@@ -3,11 +3,18 @@ const requiredValidatorProperties = ['validate']
 
 const Model = class {
   #rootItemManagers = []
+  #subModels = []
   #validators = []
 
-  constructor({ rootItemManagers = [] } = {}) {
+  constructor({ rootItemManagers = [], subModels = [], validators = [] } = {}) {
     for (const itemManager of rootItemManagers) {
       this.bindRootItemManager(itemManager)
+    }
+    for (const { name, model } of subModels) {
+      this.bindSubModel(name, model)
+    }
+    for (const validator of validators) {
+      this.bindValidator(validator)
     }
   }
 
@@ -28,6 +35,23 @@ const Model = class {
     this.#rootItemManagers.push(itemManager)
   }
 
+  bindSubModel(name, model) {
+    for (const property of requiredValidatorProperties) {
+      if (!(property in model)) {
+        throw new Error(`Validator ${validator.name ? validator.name + ' ' : ''} does not define required property '${property}'.`)
+      }
+    }
+
+    Object.defineProperty(this, name, {
+      value        : model,
+      writable     : false,
+      enumerable   : true,
+      configurable : false
+    })
+
+    this.#subModels.push(model)
+  }
+
   bindValidator(validator) {
     for (const property of requiredValidatorProperties) {
       if (!(property in validator)) {
@@ -38,16 +62,24 @@ const Model = class {
     this.#validators.push(validator)
   }
 
-  validate() {
+  async validate() {
+    const validations = []
+
     for (const itemManager of this.#rootItemManagers) {
       if (itemManager.validate) {
-        itemManager.validate()
+        validations.push(itemManager.validate())
       }
     }
 
     for (const validator of this.#validators) {
-      validator.validate(this)
+      validations.push(validator.validate(this))
     }
+
+    for (const subModel of this.#subModels) {
+      validations.push(subModel.validate())
+    }
+
+    await Promise.all(validations)
   }
 }
 
