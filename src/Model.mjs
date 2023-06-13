@@ -62,24 +62,26 @@ const Model = class {
     this.#validators.push(validator)
   }
 
-  async validate() {
+  async validate({ errors = [], warnings = [] } = {}) {
     const validations = []
 
     for (const itemManager of this.#rootItemManagers) {
       if (itemManager.validate) {
-        validations.push(itemManager.validate())
+        validations.push(itemManager.validate({ errors, warnings }))
       }
     }
 
     for (const validator of this.#validators) {
-      validations.push(validator.validate(this))
+      validations.push(validator.validate({ model : this, errors, warnings }))
     }
 
     for (const subModel of this.#subModels) {
-      validations.push(subModel.validate())
+      validations.push(subModel.validate({ errors, warnings }))
     }
 
     await Promise.all(validations)
+
+    return { errors, warnings }
   }
 }
 
