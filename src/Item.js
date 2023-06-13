@@ -167,7 +167,7 @@ const Item = class {
   #data
   #self
 
-  constructor(data, { allowSet = [], ...rest } = {}) {
+  constructor(data) {
     if (Object.getPrototypeOf(this) === Item.prototype) {
       throw new Error("'Item's cannot be created directly. You must create a sub-class and configure it via 'Item.bindCreationConfig'.")
     }
@@ -191,7 +191,7 @@ const Item = class {
       data : this.#data,
       propIndex,
       methodIndex,
-      allowSet
+      allowSet: this.allowSet
     }))
 
     // since we return the proxy, we save the real underlying object internally
@@ -201,6 +201,8 @@ const Item = class {
   } // end constructor
 
   // get id() { return this.#data.id || this.#idNormalizer(this.#data[this.#keyField]) }
+
+  get allowSet() { return structuredClone(this.constructor.itemConfig.allowSet )}
 
   get data() { return structuredClone(this.#data) }
 
