@@ -188,10 +188,10 @@ const Item = class {
 
     const [propIndex, methodIndex] = indexAllProperties(this)
     const proxy = new Proxy(this, handler({
-      data : this.#data,
+      data     : this.#data,
       propIndex,
       methodIndex,
-      allowSet: this.allowSet
+      allowSet : this.allowSet
     }))
 
     // since we return the proxy, we save the real underlying object internally
@@ -202,7 +202,7 @@ const Item = class {
 
   // get id() { return this.#data.id || this.#idNormalizer(this.#data[this.#keyField]) }
 
-  get allowSet() { return structuredClone(this.constructor.itemConfig.allowSet )}
+  get allowSet() { return structuredClone(this.constructor.itemConfig.allowSet) }
 
   get data() { return structuredClone(this.#data) }
 

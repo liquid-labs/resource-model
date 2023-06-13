@@ -62,6 +62,22 @@ const Model = class {
     this.#validators.push(validator)
   }
 
+  async save({ noValidate = false }) {
+    if (noValidate !== true) {
+      const { errors } = this.validate()
+      if (errors.length > 0) {
+        throw new Error('There are errors in the model; cannot save: ' + errors.join('\n'))
+      }
+    }
+
+    for (const itemManager of this.#rootItemManagers) {
+      itemManager.save({ noValidate : true }) // already validated
+    }
+    for (const subModel of this.#subModels) {
+      subModel.save({ noValidate : true }) // already validated
+    }
+  }
+
   async validate({ errors = [], warnings = [] } = {}) {
     const validations = []
 
