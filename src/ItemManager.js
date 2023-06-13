@@ -1,4 +1,5 @@
-import * as fs from 'node:fs'
+import { readFileSync } from 'node:fs'
+import * as fs from 'node:fs/promises'
 
 import { getSourceFile } from '@liquid-labs/federated-json'
 
@@ -38,7 +39,7 @@ const ItemManager = class {
       throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${this.itemsName}.`)
     }
     if (readFromFile === true) {
-      items = JSON.parse(fs.readFileSync(fileName))
+      items = JSON.parse(readFileSync(fileName))
     }
 
     // set manuall set itemConfig
@@ -69,7 +70,7 @@ const ItemManager = class {
         ? (data) => { delete data.id; return data }
         : (data) => {
           delete data.id
-          return origDataCleaner
+          return origDataCleaner(data)
         }
       this.#itemConfigCache = Object.assign({}, this.#itemConfig, { dataCleaner : newCleaner })
       Object.freeze(this.#itemConfigCache)
@@ -212,14 +213,23 @@ const ItemManager = class {
     this.listManager.truncate()
   }
 
-  write({ fileName = this.#fileName } = {}) {
-    if (!fileName) { throw new Error(`Cannot write '${this.itemsName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`) }
+  async save({ fileName = this.#fileName, noValidate = false } = {}) {
+    if (!fileName) {
+      throw new Error(`Cannot write '${this.itemsName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
+    }
+
+    if (this.validate !== undefined && noValidate !== true) {
+      const { errors } = this.validate()
+      if (errors.length > 0) {
+        throw new Error('Item data is invalid; refusing to save.')
+      }
+    }
 
     let itemList = this.list({ rawData : true }) // now we have a deep copy, so we don't have to worry about changes
     if (this.dataCleaner) {
       itemList = itemList.map((i) => this.dataCleaner(i))
     }
-    fs.writeFileSync(fileName, JSON.stringify(itemList, null, '  '))
+    await fs.writeFile(fileName, JSON.stringify(itemList, null, '  '))
   }
 
   #addIndexes(indexes) {
@@ -284,6 +294,6 @@ const ItemManager = class {
 
 const fieldSort = (field) => (a, b) => a[field].localeCompare(b[field])
 
-const ensureRaw = (data) => data instanceof Item ? data.rawData : structuredClone(data)
+const ensureRaw = (data) => data instanceof Item ? data.data : structuredClone(data)
 
 export { ItemManager }

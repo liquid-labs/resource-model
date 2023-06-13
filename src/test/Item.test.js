@@ -16,17 +16,14 @@ const data = {
   array   : VAL_ARRAY
 }
 
-const SetFoo = class extends Item {
-  constructor(data) {
-    super(data, { allowSet : ['foo'] })
-  }
-}
+const SetFoo = class extends Item {}
 
 Item.bindCreationConfig({
   itemClass : SetFoo,
   itemName  : 'foo',
   keyField  : 'id',
-  itemsName : 'foos'
+  itemsName : 'foos',
+  allowSet  : ['foo']
 })
 
 const SubItem = class extends Item {
