@@ -241,7 +241,7 @@ const ItemManager = class {
       })
 
       const functionName = `getBy${indexField[0].toUpperCase() + indexField.slice(1)}`
-      this[functionName] = this.#getByIndex.bind(this, indexField)
+      this[functionName] = this.getByIndex.bind(this, indexField)
     }
   }
 
@@ -281,7 +281,7 @@ const ItemManager = class {
         : structuredClone(data)
   }
 
-  #getByIndex(indexName, key, options) {
+  getByIndex(indexName, key, options) {
     const result = this.listManager.getByIndex({ indexName, key, noClone : true })
     if (Array.isArray(result)) {
       return this.#dataToList(result, options)
