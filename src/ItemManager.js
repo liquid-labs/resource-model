@@ -20,6 +20,7 @@ const ItemManager = class {
   #indexById
 
   constructor({
+    allowNoFile = false,
     fileName,
     indexes = [],
     additionalItemCreationOptions = {},
@@ -30,6 +31,8 @@ const ItemManager = class {
   }) {
     // set the source file
     this.#fileName = fileName || (items !== undefined && getSourceFile(items))
+    // set manuall set itemConfig
+    this.#itemConfigCache = itemConfig || this.constructor.itemConfig
     // read from source file if indicated
     if (readFromFile === true && items && items.length > 0) {
       throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${this.itemsName}.`)
@@ -37,9 +40,6 @@ const ItemManager = class {
     if (readFromFile === true && !fileName) {
       throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${this.itemsName}.`)
     }
-
-    // set manuall set itemConfig
-    this.#itemConfigCache = itemConfig || this.constructor.itemConfig
 
     // setup ListManager
     this.listManager = new ListManager({
@@ -68,7 +68,7 @@ const ItemManager = class {
     }
 
     if (readFromFile === true) {
-      this.load()
+      this.load({ allowNoFile })
     }
     else {
       this.load({ items })
@@ -138,16 +138,24 @@ const ItemManager = class {
 
   has(name) { return !!this.#indexById[name] }
 
-  load({ items } = {}) {
+  load({ allowNoFile = false, items } = {}) {
     if (!this.#fileName && items === undefined) {
       throw new Error(`No 'file name' defined for ${this.itemsName} ItemManager; cannot 'load'.`)
     }
 
     this.truncate()
     // TODO: really just want JSON and YAML agnostic processing; federated is overkill
-    items = items || readFJSON(this.#fileName)
-    for (const item of items) {
-      this.add(item)
+    try {
+      items = items || readFJSON(this.#fileName)
+      for (const item of items) {
+        this.add(item)
+      }
+    }
+    catch (e) {
+      if (allowNoFile !== true || e.code !== 'ENOENT') {
+        throw (e)
+      }
+      // else, that's OK
     }
   }
 

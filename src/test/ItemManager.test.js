@@ -24,10 +24,29 @@ describe('ItemManager', () => {
 
   describe('constructor', () => {
     test("raises an exception when initialized with 'readFromFile' and 'items' are true/present", () =>
-      expect(() => new ItemManager({ fileName : 'foo.json', items : [{}], readFromFile : true })).toThrow())
+      expect(() => new ItemManager({
+        fileName     : 'foo.json',
+        items        : [{}],
+        itemConfig   : fooConfig,
+        readFromFile : true
+      })).toThrow(/^Cannot specify both/))
 
     test("raises an exception when initialized with 'readFromFile' and no 'fileName", () =>
-      expect(() => new ItemManager({ readFromFile : true })).toThrow())
+      expect(() => new ItemManager({ itemConfig : fooConfig, readFromFile : true })).toThrow(/^Must specify/))
+
+    test('by default raises exception when initialized with non-existent file', () =>
+      expect(() => new ItemManager({ fileName : 'foobarbaztastique.json', itemConfig : fooConfig, readFromFile : true }))
+        .toThrow(/no such file or directory/))
+
+    test("'allowNoFile: true' supresses exception and results in empty, but functioning ItemManager", () => {
+      const itemManager = new ItemManager({
+        allowNoFile  : true,
+        fileName     : 'foobarbaztastique.json',
+        itemConfig   : fooConfig,
+        readFromFile : true
+      })
+      expect(itemManager.list({ rawData : true })).toHaveLength(0)
+    })
 
     test('will load items from a file', () => {
       const itemManager =
