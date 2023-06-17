@@ -113,7 +113,7 @@ const ItemManager = class {
     if (data.id === undefined) data.id = this.idNormalizer(data[keyField])
 
     if (this.has(data.id)) {
-      throw new Error(`Cannot add ${this.itemName} with existing key '${data.id}'; try 'update'.`)
+      throw new Error(`Cannot add ${this.itemName} with existing key '${data.id}' (field: ${this.keyField}); try 'update'.`)
     }
 
     this.listManager.addItem(data)
