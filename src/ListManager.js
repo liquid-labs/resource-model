@@ -40,7 +40,7 @@ const ListManager = class {
   *     the incoming list with something like `items: [...items]` unless you can guarantee that the array will not be
   *     modified.
   */
-  constructor({ items, keyField = 'id', idIndexName = 'byId', className }) {
+  constructor({ items = [], keyField = 'id', idIndexName = 'byId', className }) {
     this.#items = items
     this.#keyField = keyField
     this.#idIndex = this.addIndex({

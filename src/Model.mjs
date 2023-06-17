@@ -62,6 +62,15 @@ const Model = class {
     this.#validators.push(validator)
   }
 
+  load() {
+    for (const itemManager of this.#rootItemManagers) {
+      itemManager.load()
+    }
+    for (const subModel of this.#subModels) {
+      subModel.load()
+    }
+  }
+
   async save({ noValidate = false }) {
     if (noValidate !== true) {
       const { errors } = this.validate()
