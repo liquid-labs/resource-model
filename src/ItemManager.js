@@ -1,7 +1,6 @@
-import { readFileSync } from 'node:fs'
 import * as fs from 'node:fs/promises'
 
-import { getSourceFile } from '@liquid-labs/federated-json'
+import { getSourceFile, readFJSON } from '@liquid-labs/federated-json'
 
 import { ListManager } from './ListManager'
 import { Item } from './Item'
@@ -30,7 +29,7 @@ const ItemManager = class {
     itemConfig
   }) {
     // set the source file
-    this.#fileName = fileName || getSourceFile(items)
+    this.#fileName = fileName || (items !== undefined && getSourceFile(items))
     // read from source file if indicated
     if (readFromFile === true && items && items.length > 0) {
       throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${this.itemsName}.`)
@@ -38,50 +37,15 @@ const ItemManager = class {
     if (readFromFile === true && !fileName) {
       throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${this.itemsName}.`)
     }
-    if (readFromFile === true) {
-      items = JSON.parse(readFileSync(fileName))
-    }
 
     // set manuall set itemConfig
-    this.#itemConfigCache = itemConfig
-
-    items = items || []
-    // normalize and guarantee uniqueness of items (based on ID)
-    const seen = {}
-    const hasExplicitId = this.#itemConfig.keyField === 'id'
-    items.forEach((item) => {
-      // add standard 'id' field if not present.
-      if (hasExplicitId === true && !('id' in item)) {
-        throw new Error("Key field 'id' not found on at least one item.")
-      }
-      if (hasExplicitId === false && 'id' in item) {
-        throw new Error(`Inferred/reserved 'id' found on at least one ${this.itemName} item (key field is: ${this.keyField}).`)
-      }
-      item.id = item.id || this.idNormalizer(item[this.keyField])
-      if (seen[item.id] === true) {
-        throw new Error(`Found items with duplicate key field '${this.keyField}' values ('${item.id}') in the ${this.itemsName} list.`)
-      }
-      seen[item.id] = true
-    })
-
-    if (hasExplicitId === false) {
-      const origDataCleaner = this.#itemConfig.dataCleaner
-      const newCleaner = origDataCleaner === undefined
-        ? (data) => { delete data.id; return data }
-        : (data) => {
-          delete data.id
-          return origDataCleaner(data)
-        }
-      this.#itemConfigCache = Object.assign({}, this.#itemConfig, { dataCleaner : newCleaner })
-      Object.freeze(this.#itemConfigCache)
-    }
+    this.#itemConfigCache = itemConfig || this.constructor.itemConfig
 
     // setup ListManager
     this.listManager = new ListManager({
       className    : this.itemsName,
       keyField     : this.keyField,
-      idNormalizer : this.idNormalizer,
-      items
+      idNormalizer : this.idNormalizer
     })
 
     // setup indexes
@@ -90,38 +54,63 @@ const ItemManager = class {
       additionalItemCreationOptions
     )
     this.#addIndexes(indexes)
-  }
 
-  // TODO: switch implementatiosn to set itemConfig directly, then we can do away with the 'Cache' convention and this constructor test.
-  get #itemConfig() {
-    // return Object.assign({}, this.#itemConfigCache || this.constructor.itemConfig)
-    return this.#itemConfigCache || this.constructor.itemConfig
+    if (this.keyField !== 'id') {
+      const origDataCleaner = this.#itemConfigCache.dataCleaner
+      const newCleaner = origDataCleaner === undefined
+        ? (data) => { delete data.id; return data }
+        : (data) => {
+          delete data.id
+          return origDataCleaner(data)
+        }
+      this.#itemConfigCache = Object.assign({}, this.#itemConfigCache, { dataCleaner : newCleaner })
+      Object.freeze(this.#itemConfigCache)
+    }
+
+    if (readFromFile === true) {
+      this.load()
+    }
+    else {
+      this.load({ items })
+    }
   }
 
   // item config convenience accessors
-  get dataCleaner() { return this.#itemConfig.dataCleaner }
+  get dataCleaner() { return this.#itemConfigCache.dataCleaner }
 
-  get dataFlattener() { return this.#itemConfig.dataFlattener }
+  get dataFlattener() { return this.#itemConfigCache.dataFlattener }
 
   /**
   * See [Item.idNormalizer](./Item.md#idnormalizer)
   */
-  get idNormalizer() { return this.#itemConfig.idNormalizer || passthruNormalizer }
+  get idNormalizer() { return this.#itemConfigCache.idNormalizer || passthruNormalizer }
 
-  get itemClass() { return this.#itemConfig.itemClass }
+  get itemClass() { return this.#itemConfigCache.itemClass }
 
-  get itemName() { return this.#itemConfig.itemName }
+  get itemName() { return this.#itemConfigCache.itemName }
 
   /**
   * See [Item.keyField](./Item.md#keyfield)
   */
-  get keyField() { return this.#itemConfig.keyField }
+  get keyField() { return this.#itemConfigCache.keyField }
 
-  get itemsName() { return this.#itemConfig.itemsName }
+  get itemsName() { return this.#itemConfigCache.itemsName }
 
   add(data) {
     data = ensureRaw(data)
-    if (data.id === undefined) data.id = this.idNormalizer(data[this.keyField])
+    const keyField = this.keyField
+    const hasExplicitId = keyField === 'id'
+
+    // add standard 'id' field if not present.
+    if (data[keyField] === undefined) {
+      throw new Error(`Key field '${keyField}' not found on at least one item while loading ${this.itemsName}.`)
+    }
+    if (hasExplicitId === false && 'id' in data) {
+      throw new Error(`Inferred/reserved 'id' found on at least one ${this.itemName} item (key field is: ${this.keyField}) while loading ${this.itemsName}.`)
+    }
+
+    // normalize ID
+    if (data.id === undefined) data.id = this.idNormalizer(data[keyField])
 
     if (this.has(data.id)) {
       throw new Error(`Cannot add ${this.itemName} with existing key '${data.id}'; try 'update'.`)
@@ -148,6 +137,19 @@ const ItemManager = class {
   }
 
   has(name) { return !!this.#indexById[name] }
+
+  load({ items } = {}) {
+    if (!this.#fileName && items === undefined) {
+      throw new Error(`No 'file name' defined for ${this.itemsName} ItemManager; cannot 'load'.`)
+    }
+
+    this.truncate()
+    // TODO: really just want JSON and YAML agnostic processing; federated is overkill
+    items = items || readFJSON(this.#fileName)
+    for (const item of items) {
+      this.add(item)
+    }
+  }
 
   update(data, { skipGet = false, ...rest } = {}) {
     data = ensureRaw(data)

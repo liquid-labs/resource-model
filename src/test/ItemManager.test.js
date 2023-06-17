@@ -64,6 +64,30 @@ describe('ItemManager', () => {
       expect(() => foos.get('a foo', { required : true })).toThrow(/Did not find required foo 'a foo'./))
   })
 
+  describe('load()', () => {
+    test('load items from the original file', () => {
+      const itemManager =
+        new ItemManager({ fileName : dataPath, items : [], readFromFile : false, itemConfig : fooConfig })
+      expect(itemManager.list({ rawData : true })).toHaveLength(0)
+      itemManager.load()
+      expect(itemManager.list({ rawData : true })).toHaveLength(1)
+    })
+
+    test('will re-load items from the original file', () => {
+      const itemManager =
+        new ItemManager({ fileName : dataPath, readFromFile : true, itemConfig : fooConfig })
+      const item = itemManager.get('Bobby', { rawData : true })
+      item.foo = 'bar'
+      itemManager.update(item)
+      const updatedItem = itemManager.get('Bobby', { rawData : true })
+      expect(updatedItem.foo).toBe('bar')
+
+      itemManager.load()
+      const reloadedItem = itemManager.get('Bobby')
+      expect(reloadedItem.foo).toBe(undefined)
+    })
+  })
+
   describe('save()', () => {
     const baseTmpDir = os.tmpdir()
     const tmpDir = fsPath.join(baseTmpDir, 'liquid-labs', 'resource-model')
