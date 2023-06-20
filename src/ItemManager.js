@@ -174,7 +174,7 @@ const ItemManager = class {
       const msg = `There was an error loading ${this.itemsName} data`
         + (loadFromItems === true ? '' : ` from ${this.#fileName}`)
         + ': ' + e.message
-      throw new Error(msg, { cause: e })
+      throw new Error(msg, { cause : e })
     }
   }
 
