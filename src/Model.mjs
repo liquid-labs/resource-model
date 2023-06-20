@@ -62,12 +62,12 @@ const Model = class {
     this.#validators.push(validator)
   }
 
-  load() {
+  load({ reporter } = {}) {
     for (const itemManager of this.#rootItemManagers) {
-      itemManager.load()
+      itemManager.load({ reporter })
     }
     for (const subModel of this.#subModels) {
-      subModel.load()
+      subModel.load({ reporter })
     }
   }
 

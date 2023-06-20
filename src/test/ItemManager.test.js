@@ -3,6 +3,7 @@ import * as fs from 'node:fs/promises'
 import fsPath from 'node:path'
 import os from 'node:os'
 
+import { idxType } from '../lib/index-relationships'
 import { Item } from '../Item'
 import { ItemManager } from '../ItemManager'
 
@@ -81,6 +82,30 @@ describe('ItemManager', () => {
 
     test('raises an exception when no matching items found.', () =>
       expect(() => foos.get('a foo', { required : true })).toThrow(/Did not find required foo 'a foo'./))
+  })
+
+  describe('getByIndex', () => {
+    const items = [
+      { name : 'foo', foo : 'bar', baz : 'bars' },
+      { name : 'baz', foo : 'bing', baz : 'bars' }
+    ]
+    let foos
+    beforeAll(() => {
+      foos = new ItemManager({
+        itemConfig : Foo.itemConfig,
+        indexes    : [
+          { name : 'foo', relationship : idxType.ONE_TO_ONE, indexField : 'foo' },
+          { name : 'baz', relationship : idxType.ONE_TO_MANY, indexField : 'baz' }
+        ],
+        items
+      })
+    })
+
+    test('retrieves single object from one-to-one index', () =>
+      expect(foos.getByIndex('foo', 'bar', { rawData : true, clean : true })).toEqual(items[0]))
+
+    test('retrieves list from one-to-many index', () =>
+      expect(foos.getByIndex('baz', 'bars', { rawData : true, clean : true })).toEqual(items))
   })
 
   describe('load()', () => {
