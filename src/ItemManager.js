@@ -27,6 +27,7 @@ const ItemManager = class {
     // TODO: if itemName not specified, deduce from 'itemClass'
     items = [],
     readFromFile = false,
+    reporter,
     itemConfig
   }) {
     // set the source file
@@ -68,10 +69,10 @@ const ItemManager = class {
     }
 
     if (readFromFile === true) {
-      this.load({ allowNoFile })
+      this.load({ allowNoFile, reporter })
     }
     else {
-      this.load({ items })
+      this.load({ items, reporter })
     }
   }
 
@@ -138,24 +139,42 @@ const ItemManager = class {
 
   has(name) { return !!this.#indexById[name] }
 
-  load({ allowNoFile = false, items } = {}) {
-    if (!this.#fileName && items === undefined) {
-      throw new Error(`No 'file name' defined for ${this.itemsName} ItemManager; cannot 'load'.`)
-    }
-
-    this.truncate()
-    // TODO: really just want JSON and YAML agnostic processing; federated is overkill
+  load({ allowNoFile = false, items, reporter } = {}) {
+    const loadFromItems = items !== undefined
     try {
-      items = items || readFJSON(this.#fileName)
-      for (const item of items) {
-        this.add(item)
+      if (!this.#fileName && items === undefined) {
+        throw new Error(`No 'file name' defined for ${this.itemsName} ItemManager and no items provided; cannot 'load'.`)
+      }
+
+      // Make sure we can load the file when needed before making any other changes.
+      if (items === undefined) {
+        try {
+          reporter?.log(`Attempting to read ${this.itemsName} data from '${this.#fileName}'...`)
+          // TODO: really just want JSON and YAML agnostic processing; federated is overkill
+          items = readFJSON(this.#fileName)
+          reporter?.log('Data loaded')
+        }
+        catch (e) {
+          if (allowNoFile !== true || e.code !== 'ENOENT') {
+            throw (e)
+          }
+          // else, that's OK
+        }
+      }
+
+      if (items !== undefined) {
+        reporter?.log(`Updating ${this.itemsName} data...`)
+        this.truncate()
+        for (const item of items) {
+          this.add(item)
+        }
       }
     }
     catch (e) {
-      if (allowNoFile !== true || e.code !== 'ENOENT') {
-        throw (e)
-      }
-      // else, that's OK
+      const msg = `There was an error loading ${this.itemsName} data`
+        + (loadFromItems === true ? '' : ` from ${this.#fileName}`)
+        + ': ' + e.message
+      throw new Error(msg, { cause : e })
     }
   }
 
