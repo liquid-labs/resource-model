@@ -71,7 +71,7 @@ const Model = class {
     }
   }
 
-  async save({ noValidate = false }) {
+  async save({ noValidate = false } = {}) {
     if (noValidate !== true) {
       const { errors } = this.validate()
       if (errors.length > 0) {
