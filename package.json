@@ -1,6 +1,6 @@
 {
   "name": "@liquid-labs/resource-model",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.0-alpha.7",
   "description": "",
   "main": "dist/resource-model.js",
   "engines": {
