@@ -1,0 +1,14 @@
+Test git rev: bc662a1a1519107d62532f31ded33b8af444e340
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/ItemManager.js
+  86:41  error  Requires a space before '}'  block-spacing
+
+/Users/zane/.liq/playground/liquid-labs/resource-model/src/test/ItemManager.test.js
+    6:8   error  'yaml' is defined but never used    no-unused-vars
+  174:26  error  Missing space after key 'fileName'  key-spacing
+  176:63  error  Missing space after key 'encoding'  key-spacing
+  178:45  error  Unnecessary escape character: \[    no-useless-escape
+
+✖ 5 problems (5 errors, 0 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+
