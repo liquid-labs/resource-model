@@ -1,5 +1,7 @@
 import * as fs from 'node:fs/promises'
 
+import yaml from 'js-yaml'
+
 import { getSourceFile, readFJSON } from '@liquid-labs/federated-json'
 
 import { ListManager } from './ListManager'
@@ -80,6 +82,8 @@ const ItemManager = class {
   get dataCleaner() { return this.#itemConfigCache.dataCleaner }
 
   get dataFlattener() { return this.#itemConfigCache.dataFlattener }
+
+  get fileName() { return this.#fileName }
 
   /**
   * See [Item.idNormalizer](./Item.md#idnormalizer)
@@ -258,7 +262,11 @@ const ItemManager = class {
     if (this.dataCleaner) {
       itemList = itemList.map((i) => this.dataCleaner(i))
     }
-    await fs.writeFile(fileName, JSON.stringify(itemList, null, '  '))
+
+    const newContent = fileName.endsWith('.yaml')
+      ? yaml.dump(itemList)
+      : JSON.stringify(itemList, null, '  ')
+    await fs.writeFile(fileName, newContent)
   }
 
   #addIndexes(indexes) {

@@ -157,7 +157,7 @@ describe('ItemManager', () => {
     })
 
     afterAll(async() => {
-      fs.rm(tmpDir, { recursive : true })
+      await fs.rm(tmpDir, { recursive : true })
     })
 
     test('saves equivalent data', async() => {
@@ -165,6 +165,15 @@ describe('ItemManager', () => {
         new ItemManager({ fileName : saveFile, readFromFile : true, itemConfig : fooConfig })
       expect(itemManager.list({ clean : true, rawData : true }))
         .toEqual(savedItemManager.list({ clean : true, rawData : true }))
+    })
+
+    test('save YAML style file when saving yaml file', async() => {
+      const yamlFilePath = fsPath.join(tmpDir, 'general-file.yaml')
+      await itemManager.save({ fileName : yamlFilePath })
+
+      const savedContents = await fs.readFile(yamlFilePath, { encoding : 'utf8' })
+
+      expect(savedContents).not.toMatch(/[{}[\]]/)
     })
 
     test('saves to original file name if no filename provided', async() => {

@@ -26,6 +26,7 @@
     "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.15"
   },
   "dependencies": {
-    "@liquid-labs/federated-json": "^1.0.0-alpha.34"
+    "@liquid-labs/federated-json": "^1.0.0-alpha.34",
+    "js-yaml": "^4.1.0"
   }
 }
