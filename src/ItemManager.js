@@ -83,7 +83,7 @@ const ItemManager = class {
 
   get dataFlattener() { return this.#itemConfigCache.dataFlattener }
 
-  get fileName() { return this.#fileName}
+  get fileName() { return this.#fileName }
 
   /**
   * See [Item.idNormalizer](./Item.md#idnormalizer)
