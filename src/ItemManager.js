@@ -3,9 +3,9 @@ import * as fs from 'node:fs/promises'
 import yaml from 'js-yaml'
 
 import { getSourceFile, readFJSON } from '@liquid-labs/federated-json'
+import { Item } from '@liquid-labs/resource-item'
 
 import { ListManager } from './ListManager'
-import { Item } from './Item'
 
 const passthruNormalizer = (id) => id
 

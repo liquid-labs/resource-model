@@ -1,5 +1,6 @@
 /* globals describe expect fail test */
-import { Item } from '../Item'
+import { Item } from '@liquid-labs/resource-item'
+
 import { ItemManager } from '../ItemManager'
 import { Model } from '../Model'
 

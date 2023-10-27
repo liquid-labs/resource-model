@@ -3,8 +3,9 @@ import * as fs from 'node:fs/promises'
 import fsPath from 'node:path'
 import os from 'node:os'
 
+import { Item } from '@liquid-labs/resource-item'
+
 import { idxType } from '../lib/index-relationships'
-import { Item } from '../Item'
 import { ItemManager } from '../ItemManager'
 
 const Foo = class extends Item { }
