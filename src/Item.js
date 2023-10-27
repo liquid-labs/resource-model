@@ -237,7 +237,7 @@ const Item = class {
 
 const requiredItemConfig = ['itemClass', 'itemName', 'keyField', 'itemsName']
 /**
-* Creates a frozen 'itemConfig' and immutably binds it to the Item class.
+* Creates a frozen 'itemConfig' and immutably binds it to the Item sub-class.
 *
 * #### Parameters
 *
