@@ -1,6 +1,6 @@
 {
   "name": "@liquid-labs/resource-model",
-  "version": "1.0.0-alpha.9",
+  "version": "1.0.0-alpha.10",
   "description": "Provides CRUD support for plain data objects and JSON/YAML based data files.",
   "main": "dist/resource-model.js",
   "engines": {
