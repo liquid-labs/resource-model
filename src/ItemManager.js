@@ -106,16 +106,17 @@ const ItemManager = class {
     const keyField = this.keyField
     const hasExplicitId = keyField === 'id'
 
-    // add standard 'id' field if not present.
-    if (data[keyField] === undefined) {
-      throw new Error(`Key field '${keyField}' not found on at least one item while loading ${this.itemsName}.`)
-    }
     if (hasExplicitId === false && 'id' in data) {
       throw new Error(`Inferred/reserved 'id' found on at least one ${this.itemName} item (key field is: ${this.keyField}) while loading ${this.itemsName}.`)
     }
 
     // normalize ID
-    if (data.id === undefined) data.id = this.idNormalizer(data[keyField])
+    if (data.id === undefined) data.id = this.idNormalizer(data[keyField], data)
+
+    // add standard 'id' field if not present.
+    if (data[keyField] === undefined) {
+      throw new Error(`Key field '${keyField}' not found on at least one item while loading ${this.itemsName}.`)
+    }
 
     if (this.has(data.id)) {
       throw new Error(`Cannot add ${this.itemName} with existing key '${data.id}' (field: ${this.keyField}); try 'update'.`)
@@ -197,7 +198,7 @@ const ItemManager = class {
   }
 
   delete(itemId, { required = false } = {}) {
-    itemId = this.idNormalizer(itemId)
+    itemId = this.idNormalizer(itemId, this.data)
     const item = this.#indexById[itemId]
     if (required === true && item === undefined) {
       throw new Error(`No such item with id '${item.id}' found.`)
